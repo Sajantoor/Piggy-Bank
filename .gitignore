@@ -63,7 +63,3 @@ buck-out/
 
 # Env file
 .env
-
-# React Native Windows stuff
-msbuild.binlog
-*.binlog
