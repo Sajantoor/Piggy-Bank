@@ -1,12 +1,39 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-const App = () => {
+import Add from './pages/Add';
+import Home from './pages/Home';
+import Profile from './pages/Profile';
+import Statistics from './pages/Statistics';
+import Transactions from './pages/Transactions';
+// import { PageParamList } from './utilities/constants';
+
+const Tab = createBottomTabNavigator();
+
+export default function Routes() {
   return (
-    <View>
-      <Text>Hello, World</Text>
-    </View>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Tab.Screen name="Home" component={Home} />
+          <Tab.Screen name="Statistics" component={Statistics} />
+          <Tab.Screen name="Add" component={Add} />
+          <Tab.Screen name="Transactions" component={Transactions} />
+          <Tab.Screen name="Profile" component={Profile} />
+        </Tab.Navigator>
+      </NavigationContainer>
   );
-};
+}
 
-export default App;
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+// });
