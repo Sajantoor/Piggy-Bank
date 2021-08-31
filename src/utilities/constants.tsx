@@ -1,13 +1,13 @@
 export interface TransactionObject {
-    Name: string;
-    Subtitle: string; 
-    Price: number;
+  Name: string;
+  Subtitle: string;
+  Price: number;
 }
 
 export type PageParamList = {
-    Home: undefined;
-    Add: undefined;
-    Profile: undefined;
-    Statistics: undefined;
-    Transactions: undefined;
-}
+  Home: undefined;
+  Add: undefined;
+  Profile: undefined;
+  Statistics: undefined;
+  Transactions: undefined;
+};

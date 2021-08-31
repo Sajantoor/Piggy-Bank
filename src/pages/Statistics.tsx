@@ -1,16 +1,14 @@
-import React from 'react'
-import { View, Text } from 'react-native';
+import React from 'react';
+import {View, Text} from 'react-native';
 
-interface StatisticsProps {
-    
-}
+interface StatisticsProps {}
 
 export const Statistics: React.FC<StatisticsProps> = ({}) => {
-        return (
-            <View>
-                <Text>Statistics</Text>
-            </View>
-        );
-}
+  return (
+    <View>
+      <Text>Statistics</Text>
+    </View>
+  );
+};
 
 export default Statistics;

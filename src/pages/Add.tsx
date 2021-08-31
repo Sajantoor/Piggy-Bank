@@ -3,7 +3,6 @@ import {useState} from 'react';
 import {Text, Button, View, TextInput} from 'react-native';
 import {PageParamList, TransactionObject} from '../utilities/constants';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
-import {useNavigation} from '@react-navigation/native';
 
 interface AddState {
   inputs: [string, string, number];
@@ -37,7 +36,7 @@ export const Add: React.FC<AddProps> = props => {
     const newState = {...state};
 
     if (typeof state.inputs[state.index] === 'number')
-      newState.inputs[state.index] = parseInt(text);
+      newState.inputs[state.index] = parseInt(text, 10);
     else newState.inputs[state.index] = text;
 
     !isValid && setValidInput(true);
