@@ -1,7 +1,9 @@
-import React, { ReactComponentElement, useRef } from 'react';
-import { useState } from 'react';
-import { Text, Button, View, TextInput } from 'react-native';
-import { TransactionObject } from '../utilities/constants';
+import React, {useRef} from 'react';
+import {useState} from 'react';
+import {Text, Button, View, TextInput} from 'react-native';
+import {PageParamList, TransactionObject} from '../utilities/constants';
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import {useNavigation} from '@react-navigation/native';
 
 interface AddState {
   inputs: [string, string, number];
@@ -9,9 +11,11 @@ interface AddState {
   index: number;
 }
 
-interface AddProps {}
+interface AddProps {
+  navigation: BottomTabScreenProps<PageParamList, 'Add'>;
+}
 
-export const Add: React.FC<AddProps> = () => {
+export const Add: React.FC<AddProps> = props => {
   const defaultState: AddState = {
     inputs: ['', '', 0],
     keys: ['Name', 'Description', 'Price'],
@@ -19,26 +23,39 @@ export const Add: React.FC<AddProps> = () => {
   };
 
   const [state, setState] = useState<AddState>(defaultState);
-
+  const [isValid, setValidInput] = useState<boolean>(true);
   const textInput: React.MutableRefObject<TextInput | null> = useRef(null);
 
   const updateState = (text: string) => {
-    // check if the type of input is number and then remove non numbers from input
-    if (typeof state.keys[state.index] === 'number') {
-      const newText = text.replace(/[^\d.-]/g, '');
-      const price = parseInt(newText);
-			console.log(price);
+    const valid = validateInput(text);
 
-      setState({
-        ...state,
-        inputs: [state.inputs[0], state.inputs[1], price],
-      });
+    if (!valid) {
+      setValidInput(false);
       return;
     }
 
-    const newState = { ...state };
-    newState.inputs[state.index] = text;
+    const newState = {...state};
+
+    if (typeof state.inputs[state.index] === 'number')
+      newState.inputs[state.index] = parseInt(text);
+    else newState.inputs[state.index] = text;
+
+    !isValid && setValidInput(true);
     setState(newState);
+  };
+
+  // Checks whether the input is valid or not for respective field
+  const validateInput = (text: string): boolean => {
+    if (text.length === 0) {
+      return false;
+    }
+
+    // validate numbers
+    if (typeof state.inputs[state.index] === 'number') {
+      return /^\d+$/.test(text);
+    }
+
+    return true;
   };
 
   const resetState = () => {
@@ -56,20 +73,20 @@ export const Add: React.FC<AddProps> = () => {
     if (index === state.keys.length) {
       // save the input
       const transactionObject = saveInput();
-      // resetState();
-      // navigate back to the last page and pass the transaction object as a prop
-      // props.navigation.navigate('Home', { newTransaction: transactionObject });
-
+      console.log(transactionObject);
+      resetState();
+      // navigate to home page the transaction object as a prop
+      props.navigation.navigate('Home', {newTransaction: transactionObject});
       return;
     }
 
     // check bounds
-    if (index > state.keys.length - 1 || index < 0) {
+    if (index > state.keys.length || index < 0) {
       return;
     }
 
-    // if within bounds, update the state
-    const newState = { ...state };
+    // if within bounds, update the index
+    const newState = {...state};
     newState.index = index;
     setState(newState);
   };
@@ -80,37 +97,9 @@ export const Add: React.FC<AddProps> = () => {
       Subtitle: state.inputs[1],
       Price: state.inputs[2],
     };
-		
+
     return object;
   };
-
-  //   const nextInput = (change: number) => {
-  //     // clear current text input
-  //     textInput?.current?.clear();
-  //     const index = state.index + change;
-  //     textInput?.current?.focus();
-
-  //     // if it's equal to the length then our input is finished
-  //     if (index === state.keys.length) {
-  //       // save the input
-  //       const transactionObject = saveInput();
-  //       resetState();
-  //       // navigate back to the last page and pass the transaction object as a prop
-  //       props.navigation.navigate('Home', { newTransaction: transactionObject });
-
-  //       return;
-  //     }
-
-  //     // check bounds
-  //     if (index > state.keys.length - 1 || index < 0) {
-  //       return;
-  //     }
-
-  //     // if within bounds, update the state
-  //     const newState = { ...state };
-  //     newState.index = index;
-  //     setState(newState);
-  //   };
 
   return (
     <View>
@@ -118,8 +107,7 @@ export const Add: React.FC<AddProps> = () => {
       <TextInput
         ref={textInput}
         placeholder={state.keys[state.index]}
-        onChangeText={(text) => updateState(text)} 
-				value={state.inputs[state.index].toString()}
+        onChangeText={text => updateState(text)}
       />
       <Text> Updating: {state.keys[state.index]} </Text>
 
@@ -133,7 +121,13 @@ export const Add: React.FC<AddProps> = () => {
         }
       })}
 
-      <Button title="Next" onPress={() => nextInput(1)} />
+      <Button
+        title={state.index === state.keys.length - 1 ? 'Done' : 'Next'}
+        onPress={
+          isValid ? () => nextInput(1) : () => textInput?.current?.focus()
+        }
+      />
+      {!isValid && <Text> Invalid Input </Text>}
       <Button title="Previous" onPress={() => nextInput(-1)} />
     </View>
   );
