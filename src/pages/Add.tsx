@@ -1,8 +1,7 @@
 import React, {useRef} from 'react';
 import {useState} from 'react';
 import {Text, Button, View, TextInput} from 'react-native';
-import {PageParamList, TransactionObject} from '../utilities/constants';
-import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import { TransactionObject} from '../utilities/constants';
 
 interface AddState {
   inputs: [string, string, number];
@@ -10,11 +9,7 @@ interface AddState {
   index: number;
 }
 
-interface AddProps {
-  navigation: BottomTabScreenProps<PageParamList, 'Add'>;
-}
-
-export const Add: React.FC<AddProps> = props => {
+export const Add: React.FC = () => {
   const defaultState: AddState = {
     inputs: ['', '', 0],
     keys: ['Name', 'Description', 'Price'],
@@ -22,7 +17,7 @@ export const Add: React.FC<AddProps> = props => {
   };
 
   const [state, setState] = useState<AddState>(defaultState);
-  const [isValid, setValidInput] = useState<boolean>(true);
+  const [isValid, setValidInput] = useState<boolean>(false);
   const textInput: React.MutableRefObject<TextInput | null> = useRef(null);
 
   const updateState = (text: string) => {
@@ -31,7 +26,7 @@ export const Add: React.FC<AddProps> = props => {
     if (!valid) {
       setValidInput(false);
       return;
-    }
+    } 
 
     const newState = {...state};
 
@@ -59,10 +54,20 @@ export const Add: React.FC<AddProps> = props => {
 
   const resetState = () => {
     setState(defaultState);
+    setValidInput(false);
   };
 
   const nextInput = (change: number) => {
     // clear current input, focus on input
+    // check if input is valid 
+    // if not, return
+    // const validInput = validateInput(state.inputs[state.index].toString());
+
+    // if (!validInput) {
+    //   setValidInput(false);
+    //   return;
+    // }
+
     textInput?.current?.clear();
     textInput?.current?.focus();
 
@@ -75,7 +80,6 @@ export const Add: React.FC<AddProps> = props => {
       console.log(transactionObject);
       resetState();
       // navigate to home page the transaction object as a prop
-      props.navigation.navigate('Home', {newTransaction: transactionObject});
       return;
     }
 
@@ -88,6 +92,7 @@ export const Add: React.FC<AddProps> = props => {
     const newState = {...state};
     newState.index = index;
     setState(newState);
+    setValidInput(false);
   };
 
   const saveInput = (): TransactionObject => {
