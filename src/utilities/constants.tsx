@@ -4,10 +4,4 @@ export interface TransactionObject {
   Price: number;
 }
 
-export type PageParamList = {
-  Home: undefined;
-  Add: undefined;
-  Profile: undefined;
-  Statistics: undefined;
-  Transactions: undefined;
-};
+export type PageNames = 'Home' | 'Statistics' | 'Add' | 'Transactions' | 'Profile';
