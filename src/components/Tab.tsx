@@ -1,11 +1,11 @@
 import React from 'react';
 import {Button} from 'react-native';
-import {PageNames} from '../utilities/constants';
+import { PageNames} from '../utilities/constants';
 
 interface TabProps {
   title: PageNames;
   onPress: (page: React.FC) => void;
-  component: React.FC;
+  component: React.FC; 
 }
 
 export const Tab: React.FC<TabProps> = props => {

@@ -1,7 +1,9 @@
 import React, {useRef} from 'react';
 import {useState} from 'react';
 import {Text, Button, View, TextInput} from 'react-native';
-import { TransactionObject} from '../utilities/constants';
+import {NavigatorProps, TransactionObject} from '../utilities/constants';
+
+interface Props extends NavigatorProps {}
 
 interface AddState {
   inputs: [string, string, number];
@@ -9,7 +11,7 @@ interface AddState {
   index: number;
 }
 
-export const Add: React.FC = () => {
+export const Add: React.FC<Props> = props => {
   const defaultState: AddState = {
     inputs: ['', '', 0],
     keys: ['Name', 'Description', 'Price'],
@@ -26,7 +28,7 @@ export const Add: React.FC = () => {
     if (!valid) {
       setValidInput(false);
       return;
-    } 
+    }
 
     const newState = {...state};
 
@@ -58,16 +60,6 @@ export const Add: React.FC = () => {
   };
 
   const nextInput = (change: number) => {
-    // clear current input, focus on input
-    // check if input is valid 
-    // if not, return
-    // const validInput = validateInput(state.inputs[state.index].toString());
-
-    // if (!validInput) {
-    //   setValidInput(false);
-    //   return;
-    // }
-
     textInput?.current?.clear();
     textInput?.current?.focus();
 
@@ -80,13 +72,17 @@ export const Add: React.FC = () => {
       console.log(transactionObject);
       resetState();
       // navigate to home page the transaction object as a prop
+      if (props.navigator) props.navigator('Home');
+
       return;
     }
 
     // check bounds
-    if (index > state.keys.length || index < 0) {
-      return;
-    }
+    if (index > state.keys.length) return;
+
+    // go back home
+    if (index < 0 && props.navigator) 
+      props.navigator('Home');
 
     // if within bounds, update the index
     const newState = {...state};
