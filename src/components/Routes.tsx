@@ -5,7 +5,7 @@ import Profile from '../pages/Profile';
 import Statistics from '../pages/Statistics';
 import Transactions from '../pages/Transactions';
 import {PageNames} from '../utilities/constants';
-import { RoutesContext } from './RoutesContext';
+import { Navigator } from './RoutesContext';
 import {Tab} from './Tab';
 
 interface State {
@@ -21,26 +21,52 @@ const pagesMap = {
   Transactions: Transactions,
 };
 
+const navigationStack: React.FC[] = [Home];
+
 const Routes: React.FC = () => {
   const [state, setState] = React.useState<State>({
     page: Home,
   });
 
+  // create a stack data structure of pages
   const updatePage = (page: PageNames) => {
+    // push to navigator stack
+    navigationStack.push(pagesMap[page]);
     setState({page: pagesMap[page]});
+  };
+
+  const goBack = () => {
+    // get last page from stack (pop twice)
+    navigationStack.pop();
+    const lastPage = navigationStack.pop();
+    // go to last page
+    if (lastPage) {
+      setState({page: lastPage});
+    }
+  };
+
+  const updateTab = (page: PageNames) => {
+    // clear stack
+    navigationStack.length = 0;
+    // push to navigator stack and switch page
+    navigationStack.push(pagesMap[page]);
+    console.log('update tab');
+    console.log(navigationStack);
+    setState({page: pagesMap[page]});
+
   };
   
   const page = state.page;
 
   return (
-    <RoutesContext.Provider value={{page, updatePage}}>
+    <Navigator.Provider value={{page, updatePage, updateTab, goBack}}>
       <state.page/>
       <Tab title="Home"/>
       <Tab title="Statistics"/>
       <Tab title="Add"/>
       <Tab title="Transactions"/>
       <Tab title="Profile"/>
-    </RoutesContext.Provider>
+    </Navigator.Provider>
   );
 }
 

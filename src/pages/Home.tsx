@@ -4,7 +4,7 @@ import {TransactionObject} from '../utilities/constants';
 import Transaction from '../components/Transaction';
 
 const Home: React.FC = () => {
-  const [transactions, setTransactions] = useState<TransactionObject[]>([]);
+  const [transactions] = useState<TransactionObject[]>([]);
 
   return (
     <View>

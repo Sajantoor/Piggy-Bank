@@ -1,9 +1,16 @@
-import { createContext } from 'react';
-import { PageNames } from '../utilities/constants';
+import {createContext} from 'react';
+import {PageNames} from '../utilities/constants';
 
-export const RoutesContext = createContext<RoutesContextInterface>({page: undefined, updatePage: () => {}});
+export const Navigator = createContext<RoutesContextInterface>({
+  page: undefined,
+  updatePage: () => {},
+  updateTab: () => {},
+  goBack: () => {},
+});
 
-export interface RoutesContextInterface { 
-    page: React.FC | undefined;
-    updatePage: (page: PageNames) => void;
+export interface RoutesContextInterface {
+  page: React.FC | undefined;
+  updatePage: (page: PageNames) => void;
+  updateTab: (page: PageNames) => void;
+  goBack: () => void;
 }

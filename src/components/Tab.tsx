@@ -1,8 +1,8 @@
 import React from 'react';
-import { useContext } from 'react';
+import {useContext} from 'react';
 import {Button} from 'react-native';
-import { PageNames} from '../utilities/constants';
-import { RoutesContext } from './RoutesContext';
+import {PageNames} from '../utilities/constants';
+import {Navigator} from './RoutesContext';
 
 interface TabProps {
   title: PageNames;
@@ -10,6 +10,15 @@ interface TabProps {
 }
 
 export const Tab: React.FC<TabProps> = props => {
-  const { updatePage } = useContext(RoutesContext);
-  return <Button title={props.title} onPress={() => updatePage(props.title)} />;
+  const {updateTab, updatePage} = useContext(Navigator);
+  return (
+    <Button
+      title={props.title}
+      onPress={
+        props.title === 'Add'
+          ? () => updatePage(props.title)
+          : () => updateTab(props.title)
+      }
+    />
+  );
 };
