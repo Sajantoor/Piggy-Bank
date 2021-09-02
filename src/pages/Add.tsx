@@ -1,9 +1,11 @@
 import React, {useRef} from 'react';
+import { useContext } from 'react';
 import {useState} from 'react';
 import {Text, Button, View, TextInput} from 'react-native';
-import {NavigatorProps, TransactionObject} from '../utilities/constants';
+import { RoutesContext } from '../components/RoutesContext';
+import {TransactionObject} from '../utilities/constants';
 
-interface Props extends NavigatorProps {}
+interface Props {}
 
 interface AddState {
   inputs: [string, string, number];
@@ -11,7 +13,7 @@ interface AddState {
   index: number;
 }
 
-export const Add: React.FC<Props> = props => {
+const Add: React.FC = () => {
   const defaultState: AddState = {
     inputs: ['', '', 0],
     keys: ['Name', 'Description', 'Price'],
@@ -21,6 +23,7 @@ export const Add: React.FC<Props> = props => {
   const [state, setState] = useState<AddState>(defaultState);
   const [isValid, setValidInput] = useState<boolean>(false);
   const textInput: React.MutableRefObject<TextInput | null> = useRef(null);
+  const {updatePage} = useContext(RoutesContext);
 
   const updateState = (text: string) => {
     const valid = validateInput(text);
@@ -72,8 +75,7 @@ export const Add: React.FC<Props> = props => {
       console.log(transactionObject);
       resetState();
       // navigate to home page the transaction object as a prop
-      if (props.navigator) props.navigator('Home');
-
+      updatePage('Home');
       return;
     }
 
@@ -81,8 +83,8 @@ export const Add: React.FC<Props> = props => {
     if (index > state.keys.length) return;
 
     // go back home
-    if (index < 0 && props.navigator) 
-      props.navigator('Home');
+    if (index < 0) 
+      updatePage('Home');
 
     // if within bounds, update the index
     const newState = {...state};

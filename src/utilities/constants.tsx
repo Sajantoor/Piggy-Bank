@@ -5,7 +5,3 @@ export interface TransactionObject {
 }
 
 export type PageNames = 'Home' | 'Statistics' | 'Add' | 'Transactions' | 'Profile';
-
-export interface NavigatorProps {
-  navigator?: (page: PageNames) => void;
-}
