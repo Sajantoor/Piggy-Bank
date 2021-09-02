@@ -6,9 +6,13 @@ import {Navigator} from './RoutesContext';
 
 interface TabProps {
   title: PageNames;
-  // is active probably
+  // add is active probably
 }
 
+/**
+ * Navigation bottom tabs
+ * @props `title`: The name of the page
+ */
 export const Tab: React.FC<TabProps> = props => {
   const {updateTab, updatePage} = useContext(Navigator);
   return (

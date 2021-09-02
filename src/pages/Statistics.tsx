@@ -1,9 +1,10 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 
-interface StatisticsProps {}
-
-export const Statistics: React.FC<StatisticsProps> = ({}) => {
+/**
+ * Statistics page of the app
+ */
+export const Statistics: React.FC = () => {
   return (
     <View>
       <Text>Statistics</Text>

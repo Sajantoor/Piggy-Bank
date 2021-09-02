@@ -3,6 +3,9 @@ import {Text, View} from 'react-native';
 import {TransactionObject} from '../utilities/constants';
 import Transaction from '../components/Transaction';
 
+/**
+ * Home page of the app
+ */
 const Home: React.FC = () => {
   const [transactions] = useState<TransactionObject[]>([]);
 

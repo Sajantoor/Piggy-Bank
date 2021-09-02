@@ -5,14 +5,16 @@ import Profile from '../pages/Profile';
 import Statistics from '../pages/Statistics';
 import Transactions from '../pages/Transactions';
 import {PageNames} from '../utilities/constants';
-import { Navigator } from './RoutesContext';
+import {Navigator} from './RoutesContext';
 import {Tab} from './Tab';
 
 interface State {
   page: React.FC;
 }
 
-// String to component mapping
+/**
+ * Maps the page name to the page component.
+ */
 const pagesMap = {
   Home: Home,
   Add: Add,
@@ -23,51 +25,74 @@ const pagesMap = {
 
 const navigationStack: React.FC[] = [Home];
 
+/**
+ * Clears an array.
+ * @param array
+ */
+const arrayClear = (array: any[]) => {
+  while (array.length) {
+    array.pop();
+  }
+};
+
+/**
+ * Routes component contains a list of tabs and the corresponding pages.
+ * It has a navigator using useContext that is used to navigate between pages.
+ */
 const Routes: React.FC = () => {
   const [state, setState] = React.useState<State>({
     page: Home,
   });
 
-  // create a stack data structure of pages
+  /**
+   * Navigates to the page and pushes to the stack.
+   * @param page The page we want to navigate to.
+   */
   const updatePage = (page: PageNames) => {
-    // push to navigator stack
     navigationStack.push(pagesMap[page]);
     setState({page: pagesMap[page]});
   };
 
+  /**
+   * Navigates to the previous page in the stack.
+   */
   const goBack = () => {
     // get last page from stack (pop twice)
     navigationStack.pop();
+    // pop to read the value of the last page
     const lastPage = navigationStack.pop();
+    // push it back into the stack if it exists
+    if (lastPage) {
+      navigationStack.push(lastPage);
+    }
     // go to last page
     if (lastPage) {
       setState({page: lastPage});
     }
   };
 
+  /**
+   * Navigates to the tab and clears the stack.
+   * @param page The page we want to navigate to.
+   */
   const updateTab = (page: PageNames) => {
-    // clear stack
-    navigationStack.length = 0;
-    // push to navigator stack and switch page
+    arrayClear(navigationStack);
     navigationStack.push(pagesMap[page]);
-    console.log('update tab');
-    console.log(navigationStack);
     setState({page: pagesMap[page]});
-
   };
-  
+
   const page = state.page;
 
   return (
     <Navigator.Provider value={{page, updatePage, updateTab, goBack}}>
-      <state.page/>
-      <Tab title="Home"/>
-      <Tab title="Statistics"/>
-      <Tab title="Add"/>
-      <Tab title="Transactions"/>
-      <Tab title="Profile"/>
+      <state.page />
+      <Tab title="Home" />
+      <Tab title="Statistics" />
+      <Tab title="Add" />
+      <Tab title="Transactions" />
+      <Tab title="Profile" />
     </Navigator.Provider>
   );
-}
+};
 
 export default Routes;
