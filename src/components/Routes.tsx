@@ -1,4 +1,5 @@
 import React from 'react';
+import {StyleSheet, View} from 'react-native';
 import Add from '../pages/Add';
 import Home from '../pages/Home';
 import Profile from '../pages/Profile';
@@ -86,13 +87,26 @@ const Routes: React.FC = () => {
   return (
     <Navigator.Provider value={{page, updatePage, updateTab, goBack}}>
       <state.page />
-      <Tab title="Home" />
-      <Tab title="Statistics" />
-      <Tab title="Add" />
-      <Tab title="Transactions" />
-      <Tab title="Profile" />
+      <View style={styles.container}>
+        <Tab title="Home" />
+        <Tab title="Statistics" />
+        <Tab title="Add" />
+        <Tab title="Transactions" />
+        <Tab title="Profile" />
+      </View>
     </Navigator.Provider>
   );
 };
+
+// styles
+const styles = StyleSheet.create({
+  // position container on the bottom
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+});
 
 export default Routes;
