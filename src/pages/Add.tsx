@@ -3,6 +3,8 @@ import {useContext} from 'react';
 import {useState} from 'react';
 import {Text, Button, View, TextInput} from 'react-native';
 import {Navigator} from '../components/RoutesContext';
+import {useAppDispatch} from '../redux/Hooks';
+import {add} from '../redux/Slice';
 import {TransactionObject} from '../utilities/constants';
 
 interface AddState {
@@ -22,6 +24,7 @@ const Add: React.FC = () => {
   const [isValid, setValidInput] = useState<boolean>(false);
   const textInput: React.MutableRefObject<TextInput | null> = useRef(null);
   const {goBack} = useContext(Navigator);
+  const dispatch = useAppDispatch();
 
   const updateState = (text: string) => {
     const valid = validateInput(text);
@@ -70,7 +73,7 @@ const Add: React.FC = () => {
     if (index === state.keys.length) {
       // save the input
       const transactionObject = saveInput();
-      console.log(transactionObject);
+      dispatch(add(transactionObject));
       resetState();
       // navigate to home page the transaction object as a prop
       goBack();

@@ -1,20 +1,24 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Text, View} from 'react-native';
-import {TransactionObject} from '../utilities/constants';
 import Transaction from '../components/Transaction';
+import {useAppSelector} from '../redux/Hooks';
+import {TransactionObject} from '../utilities/constants';
 
 /**
  * Home page of the app
  */
 const Home: React.FC = () => {
-  const [transactions] = useState<TransactionObject[]>([]);
+  const transactions = useAppSelector(state => state.data);
 
   return (
     <View>
       <Text>Home</Text>
-      {transactions.map((transaction, index) => (
-        <Transaction key={index} transaction={transaction} />
-      ))}
+
+      {transactions !== undefined &&
+        // @ts-ignore idk why it doesn't recognize transactions as an array
+        transactions.map((transaction: TransactionObject, index: number) => (
+          <Transaction key={index} transaction={transaction} />
+        ))}
     </View>
   );
 };
