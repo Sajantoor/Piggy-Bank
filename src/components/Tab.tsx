@@ -1,6 +1,8 @@
 import React from 'react';
 import {useContext} from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {colors} from '../styles/Constants';
+import {textStyle} from '../styles/Styles';
 import {PageNames} from '../utilities/constants';
 import {Navigator} from './RoutesContext';
 
@@ -24,7 +26,7 @@ export const Tab: React.FC<TabProps> = props => {
           ? () => updatePage(props.title)
           : () => updateTab(props.title)
       }>
-      <Text style={styles.text}> {props.title} </Text>
+      <Text style={textStyle.navText}> {props.title} </Text>
     </TouchableOpacity>
   );
 };
@@ -32,14 +34,6 @@ export const Tab: React.FC<TabProps> = props => {
 const styles = StyleSheet.create({
   tab: {
     width: '20%',
-    backgroundColor: '#000',
-  },
-
-  text: {
-    textAlign: 'center',
-    padding: '20px',
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
+    backgroundColor: colors.secondary,
   },
 });

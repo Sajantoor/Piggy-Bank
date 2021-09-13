@@ -86,7 +86,9 @@ const Routes: React.FC = () => {
 
   return (
     <Navigator.Provider value={{page, updatePage, updateTab, goBack}}>
-      <state.page />
+      <View style={styles.contentContainer}>
+        <state.page />
+      </View>
       <View style={styles.container}>
         <Tab title="Home" />
         <Tab title="Statistics" />
@@ -106,6 +108,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
+    position: 'absolute',
+    bottom: 0,
+  },
+
+  contentContainer: {
+    flex: 1,
+    padding: '5%',
+    paddingTop: '5%',
+    paddingBottom: 0,
   },
 });
 

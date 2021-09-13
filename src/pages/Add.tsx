@@ -1,10 +1,13 @@
 import React, {useRef} from 'react';
 import {useContext} from 'react';
 import {useState} from 'react';
-import {Text, Button, View, TextInput} from 'react-native';
+import {Text, Button, View, TextInput, StyleSheet} from 'react-native';
+import {Previous} from '../components/Previous';
 import {Navigator} from '../components/RoutesContext';
 import {useAppDispatch} from '../redux/Hooks';
 import {add} from '../redux/Slice';
+import {fontColors} from '../styles/Constants';
+import {textStyle} from '../styles/Styles';
 import {TransactionObject} from '../utilities/constants';
 
 interface AddState {
@@ -105,23 +108,25 @@ const Add: React.FC = () => {
 
   return (
     <View>
-      <Text> Add </Text>
-      <TextInput
-        ref={textInput}
-        placeholder={state.keys[state.index]}
-        onChangeText={text => updateState(text)}
-      />
-      <Text> Updating: {state.keys[state.index]} </Text>
-
+      <Text style={textStyle.header}>Add New</Text>
       {state.keys.map((key, index) => {
         if (index < state.index) {
           return (
-            <Text key={key}>
+            <Text style={textStyle.text} key={key}>
               {key}: {state.inputs[index]}
             </Text>
           );
         }
       })}
+
+      <TextInput
+        style={styles.input}
+        ref={textInput}
+        placeholder={state.keys[state.index]}
+        onChangeText={text => updateState(text)}
+      />
+      <View style={styles.divider} />
+      <Text style={textStyle.text}>{state.keys[state.index]}</Text>
 
       <Button
         title={state.index === state.keys.length - 1 ? 'Done' : 'Next'}
@@ -129,10 +134,31 @@ const Add: React.FC = () => {
           isValid ? () => nextInput(1) : () => textInput?.current?.focus()
         }
       />
-      {!isValid && <Text> Invalid Input </Text>}
-      <Button title="Previous" onPress={() => nextInput(-1)} />
+      {/* {!isValid && <Text> Invalid Input </Text>} */}
+      <Previous />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    borderWidth: 0,
+    color: fontColors.primary,
+    fontSize: 28,
+    fontWeight: '600',
+    textAlign: 'center',
+    padding: 10,
+  },
+
+  divider: {
+    width: '100%',
+    height: 5,
+    backgroundColor: '#FFF',
+    opacity: 0.3,
+    borderRadius: 20,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+});
 
 export default Add;
