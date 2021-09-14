@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {Navigator} from './RoutesContext';
-import Subsection from './styled/Subsection';
+import {Subsection} from './StyledText';
 
 export const Previous: React.FC = () => {
   const {goBack} = useContext(Navigator);

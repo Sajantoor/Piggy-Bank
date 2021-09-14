@@ -4,7 +4,7 @@ import {StyleSheet, TouchableOpacity} from 'react-native';
 import {colors} from '../styles/Constants';
 import {PageNames} from '../utilities/constants';
 import {Navigator} from './RoutesContext';
-import NavText from './styled/NavText';
+import {NavText} from './StyledText';
 
 interface TabProps {
   title: PageNames;

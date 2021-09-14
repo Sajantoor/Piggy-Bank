@@ -3,8 +3,7 @@ import {View} from 'react-native';
 import Transaction from '../components/Transaction';
 import {useAppSelector} from '../redux/Hooks';
 import {TransactionObject} from '../utilities/constants';
-import Subsection from '../components/styled/Subsection';
-import Header from '../components/styled/Header';
+import {Subsection, Header} from '../components/StyledText';
 
 /**
  * Home page of the app

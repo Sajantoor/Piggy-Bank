@@ -1,6 +1,7 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 import {TransactionObject} from '../utilities/constants';
+import {Text} from './StyledText';
 
 interface TransactionProps {
   transaction: TransactionObject;
@@ -15,9 +16,9 @@ interface TransactionProps {
 export const Transaction: React.FC<TransactionProps> = props => {
   return (
     <View>
-      <Text> Name: {props.transaction.Name} </Text>
-      <Text> Subtitle: {props.transaction.Subtitle} </Text>
-      <Text> Price: {props.transaction.Price} </Text>
+      <Text value={'Name: ' + props.transaction.Name} />
+      <Text value={'Subtitle: ' + props.transaction.Subtitle} />
+      <Text value={'Price: ' + props.transaction.Price} />
     </View>
   );
 };
