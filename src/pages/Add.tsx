@@ -24,7 +24,7 @@ const Add: React.FC = () => {
   };
 
   const [state, setState] = useState<AddState>(defaultState);
-  const [isValid, setValidInput] = useState<boolean>(false);
+  const [isValid, setValidInput] = useState<boolean>(true);
   const textInput: React.MutableRefObject<TextInput | null> = useRef(null);
   const {goBack} = useContext(Navigator);
   const dispatch = useAppDispatch();
@@ -63,10 +63,21 @@ const Add: React.FC = () => {
 
   const resetState = () => {
     setState(defaultState);
-    setValidInput(false);
+    setValidInput(true);
   };
 
   const nextInput = (change: number) => {
+    // BUG: this introduced a bug where numbers were not validated and went to the next input
+    // Need to store text in state and validate it before setting it 
+
+    // if the input is invalid, don't move to the next input
+    const inputValid = validateInput(state.inputs[state.index].toString());
+
+    if (!inputValid) {
+      setValidInput(false);
+      return;
+    }
+
     textInput?.current?.clear();
     textInput?.current?.focus();
 
@@ -93,7 +104,7 @@ const Add: React.FC = () => {
     const newState = {...state};
     newState.index = index;
     setState(newState);
-    setValidInput(false);
+    setValidInput(true);
   };
 
   const saveInput = (): TransactionObject => {
@@ -111,7 +122,7 @@ const Add: React.FC = () => {
       <Header value="Add New" />
       {state.keys.map((key, index) => {
         if (index < state.index) {
-          return <Text value={key + ':' + state.inputs[index]} key={index} />;
+          return <Text value={key + ': ' + state.inputs[index]} key={index} />;
         }
       })}
 
@@ -121,8 +132,8 @@ const Add: React.FC = () => {
         placeholder={state.keys[state.index]}
         onChangeText={text => updateState(text)}
       />
-      <View style={styles.divider} />
-      <Text value={state.keys[state.index]} />
+      <View style={[styles.divider, !isValid && styles.invalidInputDivider]} />
+      <Text value={state.keys[state.index]} style={styles.keyName} />
 
       <Button
         title={state.index === state.keys.length - 1 ? 'Done' : 'Next'}
@@ -144,6 +155,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     padding: 10,
+    marginTop: 100, // TODO: make this absolute
   },
 
   divider: {
@@ -155,6 +167,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
+
+  invalidInputDivider: {
+    backgroundColor: 'red', // TODO: Pick another red
+  },
+
+  keyName: {
+    paddingTop: 15,
+    paddingBottom: 15,
+  }
 });
 
 export default Add;
