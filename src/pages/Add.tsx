@@ -1,13 +1,14 @@
 import React, {useRef} from 'react';
 import {useContext} from 'react';
 import {useState} from 'react';
-import {Text, Button, View, TextInput, StyleSheet} from 'react-native';
+import {Button, View, TextInput, StyleSheet} from 'react-native';
 import {Previous} from '../components/Previous';
 import {Navigator} from '../components/RoutesContext';
+import Header from '../components/styled/Header';
+import Text from '../components/styled/Text';
 import {useAppDispatch} from '../redux/Hooks';
 import {add} from '../redux/Slice';
 import {fontColors} from '../styles/Constants';
-import {textStyle} from '../styles/Styles';
 import {TransactionObject} from '../utilities/constants';
 
 interface AddState {
@@ -108,14 +109,10 @@ const Add: React.FC = () => {
 
   return (
     <View>
-      <Text style={textStyle.header}>Add New</Text>
+      <Header value="Add New" />
       {state.keys.map((key, index) => {
         if (index < state.index) {
-          return (
-            <Text style={textStyle.text} key={key}>
-              {key}: {state.inputs[index]}
-            </Text>
-          );
+          return <Text value={key + ':' + state.inputs[index]} key={index} />;
         }
       })}
 
@@ -126,7 +123,7 @@ const Add: React.FC = () => {
         onChangeText={text => updateState(text)}
       />
       <View style={styles.divider} />
-      <Text style={textStyle.text}>{state.keys[state.index]}</Text>
+      <Text value={state.keys[state.index]} />
 
       <Button
         title={state.index === state.keys.length - 1 ? 'Done' : 'Next'}

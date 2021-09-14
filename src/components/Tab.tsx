@@ -1,10 +1,10 @@
 import React from 'react';
 import {useContext} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import {colors} from '../styles/Constants';
-import {textStyle} from '../styles/Styles';
 import {PageNames} from '../utilities/constants';
 import {Navigator} from './RoutesContext';
+import NavText from './styled/NavText';
 
 interface TabProps {
   title: PageNames;
@@ -26,7 +26,7 @@ export const Tab: React.FC<TabProps> = props => {
           ? () => updatePage(props.title)
           : () => updateTab(props.title)
       }>
-      <Text style={textStyle.navText}> {props.title} </Text>
+      <NavText value={props.title} />
     </TouchableOpacity>
   );
 };

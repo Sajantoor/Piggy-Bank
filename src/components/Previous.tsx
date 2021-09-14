@@ -1,13 +1,14 @@
 import React, {useContext} from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import {Navigator} from './RoutesContext';
+import Subsection from './styled/Subsection';
 
 export const Previous: React.FC = () => {
   const {goBack} = useContext(Navigator);
 
   return (
     <TouchableOpacity style={styles.previousButton} onPress={() => goBack()}>
-      <Text style={styles.previousButton}>Previous</Text>
+      <Subsection value="Previous" />
     </TouchableOpacity>
   );
 };
