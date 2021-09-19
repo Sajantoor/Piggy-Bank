@@ -78,8 +78,11 @@ const Add: React.FC = () => {
   const nextInput = (change: number) => {
     // don't need to validate if we go back
     const index = state.index + change;
-
-    if (change < 0) {
+    if (index < 0) {
+      resetState();
+      goBack();
+      return;
+    } else if (change < 0) {
       const newState = {...state};
       newState.index = index;
       setValidInput(true);
