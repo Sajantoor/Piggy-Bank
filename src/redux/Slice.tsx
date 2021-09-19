@@ -13,16 +13,22 @@ export const transactionSlice = createSlice({
   name: 'transactionData',
   initialState: defaultState,
   reducers: {
+    /**
+     *  Adds new transaction to the list
+     * @param action - PayloadAction<TransactionObject> - transaction object
+     */
     add: (state, action: PayloadAction<TransactionObject>) => {
       if (state.data) {
         state.data.push(action.payload);
       } else {
         const data = [action.payload];
-        console.log(data);
         state.data = data;
       }
     },
 
+    /**
+     * Removes the transaction from the list by looking through the list -> If it doesn't find it, does nothing
+     *  */ 
     remove: (state, action: PayloadAction<TransactionObject>) => {
       if (state.data) {
         // remove the transaction from the array

@@ -10,7 +10,7 @@ import {add} from '../redux/Slice';
 import {fontColors} from '../styles/Constants';
 import {TransactionObject} from '../utilities/constants';
 
-const defaultTransactionValues: TransactionObject = {
+const defaultTransaction: TransactionObject = {
   Name: '',
   Price: 0,
   Store: '',
@@ -29,19 +29,30 @@ const Add: React.FC = () => {
   const defaultState: AddState = {
     input: '', // current input
     index: 0,
-    transaction: defaultTransactionValues,
+    transaction: defaultTransaction,
   };
 
-  const transactionKeys = Object.keys(defaultTransactionValues);
-  const inputLength = transactionKeys.length;
 
+  const transactionKeys = Object.keys(defaultTransaction);
+  const inputLength = transactionKeys.length;
+  const textInput: React.MutableRefObject<TextInput | null> = useRef(null);
+  // Hooks + UseContext
   const [state, setState] = useState<AddState>(defaultState);
   const [isValid, setValidInput] = useState<boolean>(true);
-  const textInput: React.MutableRefObject<TextInput | null> = useRef(null);
   const {goBack} = useContext(Navigator);
   const dispatch = useAppDispatch();
 
-  const updateState = (text: string) => {
+  const resetState = () => {
+    setState(defaultState);
+    setValidInput(true);
+  };
+
+  /**
+   * Called from the TextInput onChangeText event
+   * Updates the state with the new input and validates it
+   * @param text The current inputed text
+   */
+  const updateInput = (text: string) => {
     const newState = {...state};
     newState.input = text;
     setState(newState);
@@ -50,7 +61,11 @@ const Add: React.FC = () => {
     setValidInput(valid);
   };
 
-  // Checks whether the input is valid or not for respective field
+  /**
+   * Checks if the input is valid and fits the type of the field 
+   * @param text The current inputed text (Optional)
+   * @returns Whether the input is valid or not
+   */
   const validateInput = (text = state.input): boolean => {
     if (text.length === 0) {
       return false;
@@ -70,23 +85,21 @@ const Add: React.FC = () => {
     return true;
   };
 
-  const resetState = () => {
-    setState(defaultState);
-    setValidInput(true);
-  };
-
-  const nextInput = (change: number) => {
-    // don't need to validate if we go back
+  /**
+   * Goes to the field with respect to the `change` in index
+   * Validates the current input in state.input and updates the state accordingly
+   * @param change The change in the input
+   * @returns void
+   */
+  const nextField = (change: number) => {
     const index = state.index + change;
+    
+    // don't need to validate if we go back, out of bounds, etc.
     if (index < 0) {
-      resetState();
       goBack();
       return;
-    } else if (change < 0) {
-      const newState = {...state};
-      newState.index = index;
-      setValidInput(true);
-      setState(newState);
+    } else if (change < 0) { // go back a field
+      updateState(index);
       return; 
     }
 
@@ -100,7 +113,6 @@ const Add: React.FC = () => {
     textInput?.current?.clear();
     textInput?.current?.focus();
 
-
     // if it's equal to the length then our input is finished
     if (index === inputLength) {
       // save the input
@@ -112,28 +124,45 @@ const Add: React.FC = () => {
       return;
     }
 
-    // check bounds
-    if (index > inputLength) return;
-
-    // go back home
-    if (index < 0) goBack();
-
     // if within bounds, update the index
-    let newState = {...state};
     const key = transactionKeys[state.index];
-    const currentValue = (state.transaction as any)[key];
-    let value: string | number = state.input;
+    updateState(index, state.input, key);   
+  };
 
-    if (typeof currentValue === 'number')
-        value = parseInt(value, 10);
+  /**
+   * Updates the state with the new index and input
+   * @param index The index of the next state
+   * @param value The value of that we want to update in the state.transaction
+   * @param key The key for state.transaction
+   */
+  const updateState = (index?: number, value?: string, key?: string) => {
+    const newState = {...state};
+    // if it has a key and a value then we need to update the transaction object
+    if (key && value) {
+      const currentField = (state.transaction as any)[key];
+      let inputValue: string | number = value;
+      // set to correct type 
+      if (typeof currentField === 'number')
+        inputValue = parseInt(value, 10);
 
-    newState.transaction = {...state.transaction, [key]: value};
-    newState.index = index;
+      newState.transaction = {...state.transaction, [key]: inputValue};
+    }
+
+    if (index !== undefined) 
+      newState.index = index;
+
     newState.input = '';
+    textInput?.current?.clear();
+    textInput?.current?.focus();
+
     setState(newState);
     setValidInput(true);
   };
 
+
+  /**
+   * @returns The state's transaction object
+   */
   const saveInput = (): TransactionObject => {
     return state.transaction;
   };
@@ -154,7 +183,7 @@ const Add: React.FC = () => {
         style={styles.input}
         ref={textInput}
         placeholder={transactionKeys[state.index]}
-        onChangeText={text => updateState(text)}
+        onChangeText={text => updateInput(text)}
       />
       <View style={[styles.divider, !isValid && styles.invalidInputDivider]} />
       {/* Name of the value being entered */}
@@ -163,10 +192,10 @@ const Add: React.FC = () => {
       <Button
         title={state.index === inputLength - 1 ? 'Done' : 'Next'}
         onPress={
-          isValid ? () => nextInput(1) : () => textInput?.current?.focus()
+          isValid ? () => nextField(1) : () => textInput?.current?.focus()
         }
       />
-      <Previous backFunc={() => nextInput(-1)}/>
+      <Previous backFunc={() => nextField(-1)}/>
     </View>
   );
 };
