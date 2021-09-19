@@ -1,7 +1,10 @@
 export interface TransactionObject {
   Name: string;
-  Subtitle: string;
   Price: number;
+  Store: string;
+  Location: string; // Types for this? -> Not sure
+  Date: string;  // Types? -> Not sure 
+  Category: string; // Types -> This is doable
 }
 
 /**

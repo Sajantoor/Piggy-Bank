@@ -10,18 +10,30 @@ import {add} from '../redux/Slice';
 import {fontColors} from '../styles/Constants';
 import {TransactionObject} from '../utilities/constants';
 
+const defaultTransactionValues: TransactionObject = {
+  Name: '',
+  Price: 0,
+  Store: '',
+  Location: '',
+  Date: '',
+  Category: '',
+}
+
 interface AddState {
-  inputs: [string, string, number];
-  keys: Array<string>;
+  input: string;
   index: number;
+  transaction: TransactionObject;
 }
 
 const Add: React.FC = () => {
   const defaultState: AddState = {
-    inputs: ['', '', 0],
-    keys: ['Name', 'Description', 'Price'],
+    input: '', // current input
     index: 0,
+    transaction: defaultTransactionValues,
   };
+
+  const transactionKeys = Object.keys(defaultTransactionValues);
+  const inputLength = transactionKeys.length;
 
   const [state, setState] = useState<AddState>(defaultState);
   const [isValid, setValidInput] = useState<boolean>(true);
@@ -30,33 +42,30 @@ const Add: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const updateState = (text: string) => {
-    const valid = validateInput(text);
-
-    if (!valid) {
-      setValidInput(false);
-      return;
-    }
-
     const newState = {...state};
-
-    if (typeof state.inputs[state.index] === 'number')
-      newState.inputs[state.index] = parseInt(text, 10);
-    else newState.inputs[state.index] = text;
-
-    !isValid && setValidInput(true);
+    newState.input = text;
     setState(newState);
+
+    const valid = validateInput(text);
+    setValidInput(valid);
   };
 
   // Checks whether the input is valid or not for respective field
-  const validateInput = (text: string): boolean => {
+  const validateInput = (text = state.input): boolean => {
     if (text.length === 0) {
       return false;
     }
 
+    // check if text is empty 
+    // if (/^\s*$/.test(text) === false) {
+    //   return false;
+    // }
+
+    const key = transactionKeys[state.index];
     // validate numbers
-    if (typeof state.inputs[state.index] === 'number') {
+    if (typeof (state.transaction as any)[key] === 'number') {
       return /^\d+$/.test(text);
-    }
+    } 
 
     return true;
   };
@@ -67,11 +76,7 @@ const Add: React.FC = () => {
   };
 
   const nextInput = (change: number) => {
-    // BUG: this introduced a bug where numbers were not validated and went to the next input
-    // Need to store text in state and validate it before setting it 
-
-    // if the input is invalid, don't move to the next input
-    const inputValid = validateInput(state.inputs[state.index].toString());
+    const inputValid = validateInput();
 
     if (!inputValid) {
       setValidInput(false);
@@ -84,7 +89,7 @@ const Add: React.FC = () => {
     const index = state.index + change;
 
     // if it's equal to the length then our input is finished
-    if (index === state.keys.length) {
+    if (index === inputLength) {
       // save the input
       const transactionObject = saveInput();
       dispatch(add(transactionObject));
@@ -95,53 +100,61 @@ const Add: React.FC = () => {
     }
 
     // check bounds
-    if (index > state.keys.length) return;
+    if (index > inputLength) return;
 
     // go back home
     if (index < 0) goBack();
 
     // if within bounds, update the index
-    const newState = {...state};
+    let newState = {...state};
+    const key = transactionKeys[state.index];
+    console.log(state.index);
+    console.log(key);
+    const currentValue = (state.transaction as any)[key];
+    let value: string | number = state.input;
+
+    if (typeof currentValue === 'number')
+        value = parseInt(value, 10);
+
+    newState.transaction = {...state.transaction, [key]: value};
     newState.index = index;
+    newState.input = '';
     setState(newState);
     setValidInput(true);
   };
 
   const saveInput = (): TransactionObject => {
-    const object: TransactionObject = {
-      Name: state.inputs[0],
-      Subtitle: state.inputs[1],
-      Price: state.inputs[2],
-    };
-
-    return object;
+    return state.transaction;
   };
 
   return (
     <View>
       <Header value="Add New" />
-      {state.keys.map((key, index) => {
+      {transactionKeys.map((key, index) => {
+        // casting it to any because typescript doesn't like it otherwise
+        const value = (state.transaction as any)[key].toString();
+
         if (index < state.index) {
-          return <Text value={key + ': ' + state.inputs[index]} key={index} />;
+          return <Text value={key + ': ' + value} key={index} />;
         }
       })}
 
       <TextInput
         style={styles.input}
         ref={textInput}
-        placeholder={state.keys[state.index]}
+        placeholder={transactionKeys[state.index]}
         onChangeText={text => updateState(text)}
       />
       <View style={[styles.divider, !isValid && styles.invalidInputDivider]} />
-      <Text value={state.keys[state.index]} style={styles.keyName} />
+      {/* Name of the value being entered */}
+      <Text value={transactionKeys[state.index]} style={styles.keyName} />
 
       <Button
-        title={state.index === state.keys.length - 1 ? 'Done' : 'Next'}
+        title={state.index === inputLength - 1 ? 'Done' : 'Next'}
         onPress={
           isValid ? () => nextInput(1) : () => textInput?.current?.focus()
         }
       />
-      {/* {!isValid && <Text> Invalid Input </Text>} */}
       <Previous />
     </View>
   );
@@ -175,7 +188,7 @@ const styles = StyleSheet.create({
   keyName: {
     paddingTop: 15,
     paddingBottom: 15,
-  }
+  },
 });
 
 export default Add;

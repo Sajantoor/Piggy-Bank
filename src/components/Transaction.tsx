@@ -17,7 +17,7 @@ export const Transaction: React.FC<TransactionProps> = props => {
   return (
     <View>
       <Text value={'Name: ' + props.transaction.Name} />
-      <Text value={'Subtitle: ' + props.transaction.Subtitle} />
+      <Text value={'Store: ' + props.transaction.Store} />
       <Text value={'Price: ' + props.transaction.Price} />
     </View>
   );
