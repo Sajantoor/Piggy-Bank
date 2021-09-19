@@ -57,9 +57,9 @@ const Add: React.FC = () => {
     }
 
     // check if text is empty 
-    // if (/^\s*$/.test(text) === false) {
-    //   return false;
-    // }
+    if (/^\s*$/.test(text) === true) {
+      return false;
+    }
 
     const key = transactionKeys[state.index];
     // validate numbers
@@ -76,6 +76,17 @@ const Add: React.FC = () => {
   };
 
   const nextInput = (change: number) => {
+    // don't need to validate if we go back
+    const index = state.index + change;
+
+    if (change < 0) {
+      const newState = {...state};
+      newState.index = index;
+      setValidInput(true);
+      setState(newState);
+      return; 
+    }
+
     const inputValid = validateInput();
 
     if (!inputValid) {
@@ -86,7 +97,6 @@ const Add: React.FC = () => {
     textInput?.current?.clear();
     textInput?.current?.focus();
 
-    const index = state.index + change;
 
     // if it's equal to the length then our input is finished
     if (index === inputLength) {
@@ -108,8 +118,6 @@ const Add: React.FC = () => {
     // if within bounds, update the index
     let newState = {...state};
     const key = transactionKeys[state.index];
-    console.log(state.index);
-    console.log(key);
     const currentValue = (state.transaction as any)[key];
     let value: string | number = state.input;
 
@@ -155,7 +163,7 @@ const Add: React.FC = () => {
           isValid ? () => nextInput(1) : () => textInput?.current?.focus()
         }
       />
-      <Previous />
+      <Previous backFunc={() => nextInput(-1)}/>
     </View>
   );
 };
