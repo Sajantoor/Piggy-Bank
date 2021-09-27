@@ -5,19 +5,26 @@
     "lib": [
       "es2017"
     ],
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
     "allowJs": true,
     "jsx": "react",
-    "noEmit": true,
+    "noEmit": false,
     "isolatedModules": true,
     "strict": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true
-  },
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "emitDecoratorMetadata": true,
+    "noImplicitAny": true,
+    "sourceMap": true
+    },
   "exclude": [
     "node_modules",
     "babel.config.js",
