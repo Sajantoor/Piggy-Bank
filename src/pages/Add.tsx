@@ -15,9 +15,9 @@ const defaultTransaction: TransactionObject = {
   Price: 0,
   Store: '',
   Location: '',
-  Date: '',
+  Date: new Date(),
   Category: '',
-}
+};
 
 interface AddState {
   input: string;
@@ -31,7 +31,6 @@ const Add: React.FC = () => {
     index: 0,
     transaction: defaultTransaction,
   };
-
 
   const transactionKeys = Object.keys(defaultTransaction);
   const inputLength = transactionKeys.length;
@@ -62,7 +61,7 @@ const Add: React.FC = () => {
   };
 
   /**
-   * Checks if the input is valid and fits the type of the field 
+   * Checks if the input is valid and fits the type of the field
    * @param text The current inputed text (Optional)
    * @returns Whether the input is valid or not
    */
@@ -71,7 +70,7 @@ const Add: React.FC = () => {
       return false;
     }
 
-    // check if text is empty 
+    // check if text is empty
     if (/^\s*$/.test(text) === true) {
       return false;
     }
@@ -80,7 +79,7 @@ const Add: React.FC = () => {
     // validate numbers
     if (typeof (state.transaction as any)[key] === 'number') {
       return /^\d+$/.test(text);
-    } 
+    }
 
     return true;
   };
@@ -93,14 +92,15 @@ const Add: React.FC = () => {
    */
   const nextField = (change: number) => {
     const index = state.index + change;
-    
+
     // don't need to validate if we go back, out of bounds, etc.
     if (index < 0) {
       goBack();
       return;
-    } else if (change < 0) { // go back a field
+    } else if (change < 0) {
+      // go back a field
       updateState(index);
-      return; 
+      return;
     }
 
     const inputValid = validateInput();
@@ -126,7 +126,7 @@ const Add: React.FC = () => {
 
     // if within bounds, update the index
     const key = transactionKeys[state.index];
-    updateState(index, state.input, key);   
+    updateState(index, state.input, key);
   };
 
   /**
@@ -141,15 +141,13 @@ const Add: React.FC = () => {
     if (key && value) {
       const currentField = (state.transaction as any)[key];
       let inputValue: string | number = value;
-      // set to correct type 
-      if (typeof currentField === 'number')
-        inputValue = parseInt(value, 10);
+      // set to correct type
+      if (typeof currentField === 'number') inputValue = parseInt(value, 10);
 
       newState.transaction = {...state.transaction, [key]: inputValue};
     }
 
-    if (index !== undefined) 
-      newState.index = index;
+    if (index !== undefined) newState.index = index;
 
     newState.input = '';
     textInput?.current?.clear();
@@ -158,7 +156,6 @@ const Add: React.FC = () => {
     setState(newState);
     setValidInput(true);
   };
-
 
   /**
    * @returns The state's transaction object
@@ -195,7 +192,7 @@ const Add: React.FC = () => {
           isValid ? () => nextField(1) : () => textInput?.current?.focus()
         }
       />
-      <Previous backFunc={() => nextField(-1)}/>
+      <Previous backFunc={() => nextField(-1)} />
     </View>
   );
 };

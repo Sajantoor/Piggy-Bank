@@ -3,7 +3,7 @@ export interface TransactionObject {
   Price: number;
   Store: string;
   Location: string; // Types for this? -> Not sure
-  Date: string;  // Types? -> Not sure 
+  Date: Date; 
   Category: string; // Types -> This is doable
 }
 
