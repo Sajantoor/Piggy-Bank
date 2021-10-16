@@ -5,7 +5,9 @@ import { ApolloServer } from "apollo-server-express"
 import { buildSchema } from "type-graphql";
 import { Transaction } from "./entity/Transaction";
 import TransactionResolver from "./resolvers/Transaction";
-import { __PROD__ } from "./utilities/constants";
+// import { __PROD__ } from "./utilities/constants";
+
+const __PROD__ = false;
 
 const connection = {
     type: "postgres",

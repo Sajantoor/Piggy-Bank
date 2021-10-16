@@ -5,7 +5,9 @@ import Routes from './components/Routes';
 import Store from './redux/Store';
 import {global} from './styles/Styles';
 import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
-import {apolloServerUri} from './shared/utilities/constants';
+// import {apolloServerUri} from './shared/utilities/constants';
+
+const apolloServerUri = 'http://localhost:4000/graphql';
 
 const client = new ApolloClient({
   uri: apolloServerUri,
