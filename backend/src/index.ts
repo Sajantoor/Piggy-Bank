@@ -5,7 +5,10 @@ import { ApolloServer } from "apollo-server-express"
 import { buildSchema } from "type-graphql";
 import { Transaction } from "./entity/Transaction";
 import TransactionResolver from "./resolvers/Transaction";
-import { __PROD__ } from "./utilities/constants";
+// this is disgusting but CRA doesn't support imports outside of src
+// TODO: Make this better, possible solution: https://dev.to/larswaechter/path-aliases-with-typescript-in-nodejs-4353
+// Didn't work when I tried... :(
+import { __PROD__ } from "../../frontend/src/shared/constants";
 
 const connection = {
     type: "postgres",
