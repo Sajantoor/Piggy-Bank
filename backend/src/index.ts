@@ -4,7 +4,9 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express"
 import { buildSchema } from "type-graphql";
 import { Transaction } from "./entity/Transaction";
+import { User } from "./entity/User";
 import TransactionResolver from "./resolvers/Transaction";
+import UserResolver from "./resolvers/User";
 // this is disgusting but CRA doesn't support imports outside of src
 // TODO: Make this better, possible solution: https://dev.to/larswaechter/path-aliases-with-typescript-in-nodejs-4353
 // Didn't work when I tried... :(
@@ -19,7 +21,8 @@ const connection = {
     synchronize: true,
     database: "piggybank",
     entities: [
-        Transaction
+        Transaction,
+        User
     ],
     debug: !__PROD__,
     logging: true,
@@ -31,7 +34,7 @@ const main = async () => {
     const app = express();
     const apolloserver = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [TransactionResolver],
+            resolvers: [TransactionResolver, UserResolver],
             validate: false,
         }),
     });
