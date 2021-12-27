@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from "type-graphql";
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @ObjectType()
 @Entity()
@@ -24,11 +24,15 @@ export class Transaction extends BaseEntity {
     @Column()
     location: string;
 
-    @Field(() => String)
-    @Column()
-    date: Date;
-
     @Field()
     @Column()
     category: string;
+
+    @Field(() => Date)
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @Field(() => Date)
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

@@ -26,12 +26,13 @@ class TransactionResolver {
     ): Promise<Transaction | null> {
         // 2 SQL queries
         const post = await Transaction.findOne(id);
-        if (!post) {
+
+        if (!post)
             return null;
-        }
-        if (name) {
+
+        if (name)
             post.name = name;
-        }
+
         await post.save();
         return post;
     }
