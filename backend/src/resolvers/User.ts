@@ -1,96 +1,28 @@
-import { Resolver, Arg, Mutation, InputType, Field, ObjectType } from "type-graphql";
+import { Resolver, Arg, Mutation } from "type-graphql";
 import { User } from "../entity/User";
 import argon2 from "argon2";
-
-@InputType()
-class UsernamePasswordInput {
-    @Field()
-    username: string;
-
-    @Field()
-    password: string;
-}
-
-/**
- * User friendly error, saying what field is invalid and why
- */
-@ObjectType()
-class FieldError {
-    @Field()
-    field: string;
-
-    @Field()
-    message: string;
-}
-
-@ObjectType()
-class UserResponse {
-    @Field(() => [FieldError], { nullable: true })
-    errors?: FieldError[];
-
-    @Field(() => User, { nullable: true })
-    user?: User;
-}
-
-/**
- * Validates the inputted username 
- * @param username the username to validate
- * @returns true if valid, false otherwise
- */
-function validateUsername(username: string): boolean {
-    if (username.includes(" "))
-        return false;
-
-    return true;
-}
-
-/**
- * Validates the inputted password
- * @param password the password to validate
- * @returns true if valid, false otherwise
- */
-function validatePassword(password: string): boolean {
-    if (password.length < 8)
-        return false;
-
-    return true;
-}
+import FieldError from "../types/objectTypes/FieldError";
+import userInput from "../types/inputTypes/userInput";
+import UserResponse from "../types/objectTypes/UserResponse";
+import validateInput from "../utilities/validateUsername";
 
 @Resolver()
 class UserResolver {
+    /**
+     * Register a new user with a given input 
+     * @param input The input that the user has entered
+     * @returns The user if successful, or the errors if not
+     */
     @Mutation(() => UserResponse)
-    async register(@Arg("options") options: UsernamePasswordInput): Promise<UserResponse> {
-        // check if the user already exists
-        const isUser = await User.findOne({ where: { username: options.username } });
-
-        if (isUser)
-            return {
-                errors: [{
-                    field: "username",
-                    message: "Username already exists"
-                }],
-            }
-
-        // Validate the username and password
-        if (!validateUsername(options.username))
-            return {
-                errors: [{
-                    field: "username",
-                    message: "Invalid username: can't contain spaces"
-                }]
-            }
-
-        if (!validatePassword(options.password))
-            return {
-                errors: [{
-                    field: "password",
-                    message: "Invalid password: must be at least 8 characters"
-                }]
-            }
+    async register(@Arg("options") input: userInput): Promise<UserResponse> {
+        const errors = await validateInput(input);
+        if (errors.length > 0)
+            return { errors };
 
         // Hash the password and create the new user
-        const username = options.username.toLowerCase();
-        const hashedPassword = await argon2.hash(options.password);
+        // username is case insensitive
+        const username = input.username.toLowerCase();
+        const hashedPassword = await argon2.hash(input.password);
 
         const user = User.create({
             username: username,
@@ -101,29 +33,32 @@ class UserResolver {
         return { user };
     }
 
+    /**
+     * Login a user with a given input 
+     * @param input The input that the user has entered
+     * @returns The user if successful, or the errors if not
+     */
     @Mutation(() => UserResponse)
-    async login(@Arg("options") options: UsernamePasswordInput): Promise<UserResponse> {
-        const username = options.username;
+    async login(@Arg("options") input: userInput): Promise<UserResponse> {
+        // usernames are case insensitive
+        const username = input.username.toLowerCase();
+
+        // check if the user exists if not return error 
         const user = await User.findOne({ where: { username: username } });
-
-        if (!user)
+        if (!user) {
             return {
-                errors: [{
-                    field: "username",
-                    message: "That username doesn't exist"
-                }],
+                errors: [new FieldError("username", "No user with that username")]
             }
+        }
 
+        // check if the password is correct, ie hashes match
+        const valid = await argon2.verify(user.password, input.password);
 
-        const valid = await argon2.verify(user.password, options.password);
-
-        if (!valid)
+        if (!valid) {
             return {
-                errors: [{
-                    field: "password",
-                    message: "Incorrect password"
-                }],
+                errors: [new FieldError("username", "No user with that username")]
             }
+        }
 
         return { user };
     }

@@ -16,17 +16,17 @@ export class Transaction extends BaseEntity {
     @Column()
     price: number;
 
-    @Field()
-    @Column()
-    store: string;
+    // @Field()
+    // @Column()
+    // store: string;
 
-    @Field()
-    @Column()
-    location: string;
+    // @Field()
+    // @Column()
+    // location: string;
 
-    @Field()
-    @Column()
-    category: string;
+    // @Field()
+    // @Column()
+    // category: string;
 
     @Field(() => Date)
     @CreateDateColumn()
