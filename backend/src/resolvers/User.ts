@@ -15,7 +15,7 @@ class UserResolver {
      * @returns The user if successful, or the errors if not
      */
     @Mutation(() => UserResponse)
-    async register(@Arg("options") input: userInput): Promise<UserResponse> {
+    async register(@Arg("options") input: userInput, @Ctx() { req }: Context): Promise<UserResponse> {
         const errors = await validateInput(input);
         if (errors.length > 0)
             return { errors };
@@ -31,6 +31,8 @@ class UserResolver {
         });
 
         await user.save();
+        // Create a new session
+        req.session.userId = user.id;
         return { user };
     }
 
@@ -40,7 +42,7 @@ class UserResolver {
      * @returns The user if successful, or the errors if not
      */
     @Mutation(() => UserResponse)
-    async login(@Arg("options") input: userInput, @Ctx() { req, res }: Context): Promise<UserResponse> {
+    async login(@Arg("options") input: userInput, @Ctx() { req }: Context): Promise<UserResponse> {
         // usernames are case insensitive
         const username = input.username.toLowerCase();
 
@@ -60,7 +62,7 @@ class UserResolver {
                 errors: [new FieldError("username", "No user with that username")]
             }
         }
-
+        // Create a new session
         req.session.userId = user.id;
         return { user };
     }
@@ -74,7 +76,6 @@ class UserResolver {
         }
 
         const user = await User.findOne(req.session.userId)
-        console.log(user)
         return {
             user: user
         }
