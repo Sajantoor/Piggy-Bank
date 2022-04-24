@@ -17,7 +17,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "outDir": "dist",
-    "rootDirs": ["../../frontend/src/shared", "src"],
+    "rootDirs": ["../../frontend/src/shared", "/src"],
     "emitDecoratorMetadata": true,
     "noImplicitAny": true,
     "sourceMap": true
