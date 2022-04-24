@@ -14,11 +14,16 @@ import { COOKIE_NAME } from './utilities/constants';
 import { __PROD__ } from '../../frontend/src/shared/constants';
 import { Context } from './types/Context';
 
+const IS_APOLLO_STUDIO = true;
+
 const main = async () => {
     // create connection to typeorm
     await createConnection(connection);
     // create express server
     const app = express();
+
+    if (IS_APOLLO_STUDIO)
+        app.set('trust proxy', 1);
 
     // create redis client
     const RedisStore = connectRedis(session);
@@ -36,8 +41,8 @@ const main = async () => {
             cookie: {
                 maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
                 httpOnly: true,
-                sameSite: 'lax', // csrf
-                secure: __PROD__, // cookie only works in https
+                sameSite: 'none', // csrf
+                secure: IS_APOLLO_STUDIO || __PROD__, // cookie only works in https
             },
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET!,
@@ -53,10 +58,13 @@ const main = async () => {
         context: ({ req, res }): Context => ({ req, res }),
     });
 
+    const cors = IS_APOLLO_STUDIO ? { "credentials": true, "origin": "https://studio.apollographql.com" } : {};
+
     // apply middleware and start server
     await apolloserver.start();
     apolloserver.applyMiddleware({
         app,
+        cors: cors
     });
 
     app.listen(4000, () => {
