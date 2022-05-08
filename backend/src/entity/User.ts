@@ -11,6 +11,10 @@ export class User extends BaseEntity {
     @Column({ unique: true })
     username: string;
 
+    @Field()
+    @Column({ unique: true })
+    email: string;
+
     // no field because not exposing to graphql schema
     @Column()
     password: string;
@@ -22,4 +26,5 @@ export class User extends BaseEntity {
     @Field(() => Date)
     @UpdateDateColumn()
     updatedAt: Date;
+
 }

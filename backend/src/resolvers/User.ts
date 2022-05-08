@@ -2,9 +2,9 @@ import { Resolver, Arg, Mutation, Ctx } from "type-graphql";
 import { User } from "../entity/User";
 import argon2 from "argon2";
 import FieldError from "../types/objectTypes/FieldError";
-import userInput from "../types/inputTypes/userInput";
+import UserInput from "../types/inputTypes/userInput";
 import UserResponse from "../types/objectTypes/UserResponse";
-import validateInput from "../utilities/validateUsername";
+import validateInput from "../utilities/validateRegister";
 import { Context } from "../types/Context";
 
 @Resolver()
@@ -15,17 +15,25 @@ class UserResolver {
      * @returns The user if successful, or the errors if not
      */
     @Mutation(() => UserResponse)
-    async register(@Arg("options") input: userInput, @Ctx() { req }: Context): Promise<UserResponse> {
+    async register(@Arg("options") input: UserInput, @Ctx() { req }: Context): Promise<UserResponse> {
+        // For registration, username is required
+        if (!input.username)
+            return {
+                errors: [new FieldError("username", "Username is required")]
+            }
+
         const errors = await validateInput(input);
         if (errors.length > 0)
             return { errors };
 
         // Hash the password and create the new user
-        // username is case insensitive
+        // username and email is case insensitive
+        const email = input.email.toLowerCase();
         const username = input.username.toLowerCase();
         const hashedPassword = await argon2.hash(input.password);
 
         const user = User.create({
+            email: email,
             username: username,
             password: hashedPassword
         });
@@ -42,15 +50,15 @@ class UserResolver {
      * @returns The user if successful, or the errors if not
      */
     @Mutation(() => UserResponse)
-    async login(@Arg("options") input: userInput, @Ctx() { req }: Context): Promise<UserResponse> {
+    async login(@Arg("options") input: UserInput, @Ctx() { req }: Context): Promise<UserResponse> {
         // usernames are case insensitive
-        const username = input.username.toLowerCase();
+        const email = input.email.toLowerCase();
 
         // check if the user exists if not return error 
-        const user = await User.findOne({ where: { username: username } });
+        const user = await User.findOne({ where: { email: email } });
         if (!user) {
             return {
-                errors: [new FieldError("username", "No user with that username")]
+                errors: [new FieldError("email", "No user with that email")]
             }
         }
 
@@ -59,7 +67,7 @@ class UserResolver {
 
         if (!valid) {
             return {
-                errors: [new FieldError("username", "No user with that username")]
+                errors: [new FieldError("email", "No user with that email")]
             }
         }
         // Create a new session
@@ -67,6 +75,10 @@ class UserResolver {
         return { user };
     }
 
+    /**
+     * Gets the currently logged in user authenticated by session 
+     * @returns The user, if logged in and session is created, errors otherwise.
+     */
     @Mutation(() => UserResponse)
     async profile(@Ctx() { req }: Context): Promise<UserResponse> {
         if (req.session.userId == null) {
