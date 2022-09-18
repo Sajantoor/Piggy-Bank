@@ -1,4 +1,4 @@
-import { Resolver, Arg, Mutation, Ctx } from "type-graphql";
+import { Resolver, Arg, Mutation, Ctx, UseMiddleware } from "type-graphql";
 import { User } from "../entity/User";
 import argon2 from "argon2";
 import FieldError from "../types/objectTypes/FieldError";
@@ -6,6 +6,8 @@ import UserInput from "../types/inputTypes/userInput";
 import UserResponse from "../types/objectTypes/UserResponse";
 import validateInput from "../utilities/validateRegister";
 import { Context } from "../types/Context";
+import { isAuth } from "../middlewares/authentication";
+import { COOKIE_NAME } from "../utilities/constants";
 
 @Resolver()
 class UserResolver {
@@ -91,6 +93,29 @@ class UserResolver {
         return {
             user: user
         }
+    }
+
+
+    /**
+     * Logs out the currently logged in user, requires authentication to logout. 
+     * Destroys the session and clears the cookie.
+     * @returns True, if able to logout, False if there's some error
+     */
+    @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
+    async logout(@Ctx() { req, res }: Context): Promise<Boolean> {
+        return new Promise((resolve) => {
+            req.session.destroy((e) => {
+                if (e) {
+                    resolve(false);
+                    console.error("Failed to logout " + e);
+                }
+
+                res.clearCookie(COOKIE_NAME);
+                resolve(true);
+            })
+
+        })
     }
 }
 
