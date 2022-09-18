@@ -60,7 +60,7 @@ async function validateInput(input: UserInput): Promise<FieldError[]> {
 
     // We check if username exists, before this point. 
     if (!validateUsername(input.username!))
-        errors.push(new FieldError("username", "Username must not contain spaces"));
+        errors.push(new FieldError("username", "Username must not contain spaces and must be longer than 4 characters long"));
 
     if (!validateEmail(input.email))
         errors.push(new FieldError("email", "Invalid email"))

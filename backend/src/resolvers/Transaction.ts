@@ -1,5 +1,11 @@
-import { Resolver, Query, Arg, Mutation } from "type-graphql";
+import { Resolver, Query, Arg, Mutation, UseMiddleware, Ctx } from "type-graphql";
 import { Transaction } from "../entity/Transaction";
+import { isAuth } from "../middlewares/authentication";
+import { Context } from "../types/Context";
+
+function getUserAuthQuery(req: Context["req"]): object {
+    return { where: { createdBy: req.session.userId } }
+}
 
 @Resolver()
 class TransactionResolver {
@@ -8,8 +14,9 @@ class TransactionResolver {
      * @returns {Promise<Transaction[]>} a list of transactions
      */
     @Query(() => [Transaction])
-    async post(): Promise<Transaction[]> {
-        return Transaction.find();
+    @UseMiddleware(isAuth)
+    async post(@Ctx() { req }: Context): Promise<Transaction[]> {
+        return Transaction.find(getUserAuthQuery(req));
     }
 
     /**
@@ -18,8 +25,9 @@ class TransactionResolver {
      * @returns A transaction with the given id or undefined if not found
      */
     @Query(() => Transaction)
-    findOne(@Arg("id") id: number): Promise<Transaction | undefined> {
-        return Transaction.findOne(id);
+    @UseMiddleware(isAuth)
+    findOne(@Arg("id") id: number, @Ctx() { req }: Context): Promise<Transaction | undefined> {
+        return Transaction.findOne(id, getUserAuthQuery(req));
     }
 
     /**
@@ -28,9 +36,10 @@ class TransactionResolver {
      * @returns The newly created transaction
      */
     @Mutation(() => Transaction)
-    createPost(@Arg("name") name: string): Promise<Transaction> {
+    @UseMiddleware(isAuth)
+    createPost(@Arg("name") name: string, @Ctx() { req }: Context): Promise<Transaction> {
         // TODO: 2 SQL queries
-        return Transaction.create({ name }).save();
+        return Transaction.create({ name, createdBy: req.session.userId }).save();
     }
 
     /**
@@ -40,12 +49,14 @@ class TransactionResolver {
      * @returns  The updated transaction
      */
     @Mutation(() => Transaction, { nullable: true })
+    @UseMiddleware(isAuth)
     async updatePost(
         @Arg("id") id: number,
-        @Arg("name", { nullable: true }) name: string
+        @Arg("name", { nullable: true }) name: string,
+        @Ctx() { req }: Context
     ): Promise<Transaction | null> {
         // TODO: 2 SQL queries
-        const post = await Transaction.findOne(id);
+        const post = await Transaction.findOne(id, getUserAuthQuery(req));
 
         if (!post)
             return null;
@@ -63,8 +74,9 @@ class TransactionResolver {
      * @returns true if the post was deleted
      */
     @Mutation(() => Boolean)
-    async deletePost(@Arg("id") id: number): Promise<boolean> {
-        await Transaction.delete(id);
+    @UseMiddleware(isAuth)
+    async deletePost(@Arg("id") id: number, @Ctx() { req }: Context): Promise<boolean> {
+        await Transaction.delete(id, getUserAuthQuery(req));
         return true;
     }
 }

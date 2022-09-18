@@ -12,9 +12,9 @@ export class Transaction extends BaseEntity {
     @Column()
     name: string;
 
-    @Field()
-    @Column()
-    price: number;
+    // @Field()
+    // @Column()
+    // price: number;
 
     // @Field()
     // @Column()
@@ -35,4 +35,8 @@ export class Transaction extends BaseEntity {
     @Field(() => Date)
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @Field()
+    @Column()
+    createdBy: number;
 }

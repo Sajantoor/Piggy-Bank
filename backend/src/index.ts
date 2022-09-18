@@ -14,7 +14,7 @@ import { COOKIE_NAME } from './utilities/constants';
 import { __PROD__ } from '../../frontend/src/shared/constants';
 import { Context } from './types/Context';
 
-const IS_APOLLO_STUDIO = true;
+const IS_APOLLO_STUDIO = false;
 
 const main = async () => {
     // create connection to typeorm
